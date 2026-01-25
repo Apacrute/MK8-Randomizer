@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/mk8/sw.js', { scope: '/mk8/' })})}
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/MK8-Randomizer/sw.js', { scope: '/MK8-Randomizer/' })})}
