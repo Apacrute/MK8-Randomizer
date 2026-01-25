@@ -1,5 +1,5 @@
 // src/components/ResultCard.tsx
-import { GameItem } from "../types"
+import { GameItem } from "./types"
 import React from "react";
 
 export function ResultCard({ item }: { item: GameItem }) {
