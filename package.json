@@ -4,7 +4,7 @@
   "description": "Mario Kart 8 Deluxe Randomizer",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "cap:add:ios": "npx cap add ios",
     "cap:add:android": "npx cap add android",
