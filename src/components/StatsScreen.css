@@ -1,0 +1,269 @@
+/* src/components/StatsScreen.css */
+.stats-screen {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeUp 0.3s ease;
+}
+
+/* ── Summary ── */
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border);
+}
+
+.stat-value {
+  font-family: 'Bangers', cursive;
+  font-size: 32px;
+  color: var(--mk-yellow);
+  line-height: 1;
+}
+
+.stat-denom {
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+/* ── Most Played ── */
+.most-played-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,215,0,0.25);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 16px;
+}
+
+.mp-img-wrap {
+  width: 100px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.mp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.mp-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--mk-yellow);
+  letter-spacing: 0.5px;
+}
+
+.mp-name {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.mp-count {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── Controls ── */
+.stats-controls {
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-row, .sort-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sort-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.filter-btn, .sort-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-btn.active, .sort-btn.active {
+  border-color: var(--mk-yellow);
+  background: rgba(255,215,0,0.12);
+  color: var(--mk-yellow);
+}
+
+/* ── Map List ── */
+.stats-map-list {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  divide-color: var(--border);
+}
+
+.stats-map-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-map-row:last-child {
+  border-bottom: none;
+}
+
+.stats-map-row.unplayed {
+  opacity: 0.65;
+}
+
+.stats-map-img-wrap {
+  position: relative;
+  width: 64px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  background: var(--bg-input);
+}
+
+.stats-map-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.unplayed-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.stats-map-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.stats-map-name {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-map-cat {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+.stats-map-count {
+  flex-shrink: 0;
+}
+
+.count-badge {
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  color: var(--mk-yellow);
+  letter-spacing: 0.5px;
+}
+
+.unplayed-badge {
+  font-size: 16px;
+  color: var(--text-dim);
+}
+
+/* ── Reset Buttons ── */
+.reset-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reset-btn:active {
+  transform: scale(0.98);
+}
+
+.reset-btn.confirming {
+  border-color: var(--mk-orange);
+  color: var(--mk-orange);
+  background: rgba(255,107,0,0.08);
+}
+
+.reset-btn.danger {
+  border-color: rgba(232,0,28,0.3);
+  color: var(--mk-red);
+}
+
+.reset-btn.danger.confirming {
+  background: rgba(232,0,28,0.1);
+}

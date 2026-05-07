@@ -1,0 +1,120 @@
+/* src/App.css */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  height: 100vh;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--safe-top) + 14px) 20px 14px;
+  background: linear-gradient(180deg, #0a0a22 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.header-title {
+  font-family: 'Bangers', cursive;
+  font-size: 26px;
+  letter-spacing: 1px;
+  color: var(--mk-yellow);
+  text-shadow: 2px 2px 0 var(--mk-red), 4px 4px 0 rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-icon {
+  font-size: 22px;
+}
+
+.remaining-badge {
+  background: var(--mk-purple);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  animation: badgePop 0.3s ease;
+}
+
+/* ── Content ── */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ── Bottom Nav ── */
+.bottom-nav {
+  display: flex;
+  align-items: stretch;
+  padding-bottom: var(--safe-bottom);
+  background: #0d0d20;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.15s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-btn:active {
+  transform: scale(0.92);
+}
+
+.nav-btn.active {
+  color: var(--mk-yellow);
+}
+
+.nav-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* The center Roll! button */
+.randomize-nav-btn {
+  color: var(--mk-red);
+  flex: 1.2;
+}
+
+.randomize-nav-btn .nav-icon {
+  font-size: 26px;
+  transition: transform 0.3s;
+}
+
+.randomize-nav-btn.spinning .nav-icon {
+  animation: spinWheel 0.6s ease-out;
+}
+
+.randomize-nav-btn:active .nav-icon {
+  transform: scale(0.85) rotate(-20deg);
+}

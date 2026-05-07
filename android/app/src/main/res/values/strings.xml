@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MK8 Randomizer</string>
+    <string name="title_activity_main">MK8 Randomizer</string>
+    <string name="package_name">com.mk8randomizer.app</string>
+    <string name="custom_url_scheme">com.mk8randomizer.app</string>
+</resources>

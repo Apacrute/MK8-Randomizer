@@ -1,0 +1,25 @@
+import { GameItem } from '../types'
+
+export const TIRES: GameItem[] = [
+  { id: "AzureRollerTiresMK8", name: "Azure Roller", image: "images/tires/AzureRollerTiresMK8.png" },
+  { id: "Blue_Standard", name: "Blue Standard", image: "images/tires/Blue_Standard.png" },
+  { id: "ButtonTiresMK8", name: "Button Tires", image: "images/tires/ButtonTiresMK8.png" },
+  { id: "CrimsonSlimTiresMK8", name: "Crimson Slim", image: "images/tires/CrimsonSlimTiresMK8.png" },
+  { id: "CushionTiresMK8", name: "Cushion Tires", image: "images/tires/CushionTiresMK8.png" },
+  { id: "CyberSlickTiresMK8", name: "Cyber Slick", image: "images/tires/CyberSlickTiresMK8.png" },
+  { id: "GLATires-MK8", name: "GLA Tires", image: "images/tires/GLATires-MK8.png" },
+  { id: "Gold_Tires_MK8", name: "Gold Tires", image: "images/tires/Gold_Tires_MK8.png" },
+  { id: "HotMonsterTiresMK8", name: "Hot Monster", image: "images/tires/HotMonsterTiresMK8.png" },
+  { id: "Leaf_Tires_MK8", name: "Leaf Tires", image: "images/tires/Leaf_Tires_MK8.png" },
+  { id: "MetalTiresMK8", name: "Metal Tires", image: "images/tires/MetalTiresMK8.png" },
+  { id: "MK8-TriforceTires", name: "Triforce Tires", image: "images/tires/MK8-TriforceTires.png" },
+  { id: "MonsterTiresMK8", name: "Monster Tires", image: "images/tires/MonsterTiresMK8.png" },
+  { id: "Off-Road", name: "Off Road", image: "images/tires/Off-Road.png" },
+  { id: "Retro_Off-Road", name: "Retro Off Road", image: "images/tires/Retro_Off-Road.png" },
+  { id: "RollerTiresMK8", name: "Roller Tires", image: "images/tires/RollerTiresMK8.png" },
+  { id: "SlickTiresMK8", name: "Slick Tires", image: "images/tires/SlickTiresMK8.png" },
+  { id: "SlimTiresMK8", name: "Slim Tires", image: "images/tires/SlimTiresMK8.png" },
+  { id: "SpongeTiresMK8", name: "Sponge Tires", image: "images/tires/SpongeTiresMK8.png" },
+  { id: "StandardTiresMK8", name: "Standard Tires", image: "images/tires/StandardTiresMK8.png" },
+  { id: "WoodTiresMK8", name: "Wood Tires", image: "images/tires/WoodTiresMK8.png" },
+]

@@ -1,0 +1,248 @@
+/* src/components/ResultsScreen.css */
+.results-screen {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeUp 0.35s ease;
+}
+
+/* ── Empty state ── */
+.results-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 64px;
+  animation: pulse 2s ease infinite;
+}
+
+.results-empty p {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.empty-sub {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+}
+
+/* ── Shared Section ── */
+.shared-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-result-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(255,215,0,0.2);
+  box-shadow: 0 0 20px rgba(255,215,0,0.08);
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.map-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/7;
+  background: #0a0a22;
+}
+
+.map-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 8px 10px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+.map-category-badge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255,215,0,0.2);
+  color: var(--mk-yellow);
+  padding: 3px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,215,0,0.3);
+}
+
+.map-count-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 3px 8px;
+  border-radius: 20px;
+  animation: badgePop 0.4s ease;
+}
+
+.map-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.map-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.map-name {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  color: var(--mk-yellow);
+}
+
+/* Mode pill */
+.mode-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  font-family: 'Bangers', cursive;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  color: var(--mk-yellow);
+  animation: fadeUp 0.3s ease;
+}
+
+.mode-img {
+  height: 32px;
+  object-fit: contain;
+}
+
+/* ── Player Section ── */
+.player-section {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--player-color, var(--mk-red));
+  animation: fadeUp 0.35s ease;
+}
+
+.player-heading {
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--player-color, var(--mk-yellow));
+  margin-bottom: 12px;
+}
+
+/* ── Loadout Grid ── */
+.loadout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.item-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.item-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.item-img-wrap {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  border: 1px solid var(--border);
+}
+
+.item-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.item-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ── Re-roll ── */
+.reroll-wrap {
+  padding-bottom: 8px;
+}
+
+.reroll-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 2px solid var(--mk-red);
+  background: transparent;
+  color: var(--mk-red);
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.reroll-btn:active:not(:disabled) {
+  background: rgba(232,0,28,0.1);
+  transform: scale(0.98);
+}
+
+.reroll-btn.spinning {
+  animation: pulse 0.6s ease infinite;
+}
+
+.reroll-btn:disabled {
+  opacity: 0.6;
+}
+
+@media (max-width: 360px) {
+  .loadout-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
