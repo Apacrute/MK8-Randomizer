@@ -103,6 +103,12 @@ export function mapChampions(history: RaceEntry[]): Record<string, { name: strin
 }
 
 // ── Matchups: how each exact group of players does against each other ──
+export function groupKey(names: string[]): string {
+  return Array.from(new Set(names.map(n => n.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b)).join('|')
+}
+export function groupMembers(key: string): string[] {
+  return key ? key.split('|') : []
+}
 export interface MatchupMember {
   name: string
   points: number          // MK8 race points in races with this group
@@ -130,9 +136,9 @@ export function buildMatchups(history: RaceEntry[]): Matchup[] {
   for (const e of history) {
     if (!e.results || e.names.length < 2) continue
     if (!e.results.some(r => r && r.place !== null)) continue
-    const names = Array.from(new Set(e.names)).sort((a, b) => a.localeCompare(b))
+    const key = groupKey(e.names)
+    const names = groupMembers(key)
     if (names.length < 2) continue
-    const key = names.join('|')
     const g = groups[key] ??= { names, races: 0, m: {} }
     g.races++
     const winners = groupWinners(e)

@@ -14,6 +14,7 @@ interface Props {
   onAddPlayer: (name: string, slot: number) => void
   onRenamePlayer: (from: string, to: string) => void
   onRemovePlayer: (name: string) => void
+  onLoadGroup: (key: string) => void
 }
 
 function Toggle({ label, sublabel, checked, onChange, accent }: {
@@ -39,7 +40,7 @@ function Toggle({ label, sublabel, checked, onChange, accent }: {
 }
 
 export default function SetupScreen({
-  settings, onSettingsChange, onRandomize, onToggleBan, onAddPlayer, onRenamePlayer, onRemovePlayer,
+  settings, onSettingsChange, onRandomize, onToggleBan, onAddPlayer, onRenamePlayer, onRemovePlayer, onLoadGroup,
 }: Props) {
   const [managing, setManaging] = useState(false)
   const set = <K extends keyof RandomizeSettings>(key: K, val: RandomizeSettings[K]) =>
@@ -80,6 +81,15 @@ export default function SetupScreen({
             </button>
           ))}
         </div>
+        {Object.keys(settings.groupNames).length > 0 && (
+          <select className="group-load" value="" onChange={e => e.target.value && onLoadGroup(e.target.value)}>
+            <option value="">👥 Load a saved group…</option>
+            {Object.entries(settings.groupNames)
+              .filter(([k]) => k.split('|').length <= 4)
+              .sort((a, b) => a[1].localeCompare(b[1]))
+              .map(([k, name]) => <option key={k} value={k}>{name} — {k.split('|').join(', ')}</option>)}
+          </select>
+        )}
         <PlayerPicker
           count={settings.playerCount}
           slots={settings.playerNames}

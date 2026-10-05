@@ -25,6 +25,9 @@ interface Props {
   onDelete: (entryId: string) => void
   onRestored: () => void
   onToast: (t: ToastState) => void
+  roster: string[]
+  groupNames: Record<string, string>
+  onNameGroup: (key: string, name: string) => void
 }
 
 type View = 'maps' | 'prixes' | 'players' | 'history'
@@ -197,7 +200,7 @@ export default function StatsScreen(props: Props) {
         <div className="reset-section">{resetButton('prix', '🔄 Reset all cup counts')}</div>
       </>}
 
-      {view === 'players' && <PlayerStats history={history} />}
+      {view === 'players' && <PlayerStats history={history} roster={props.roster} groupNames={props.groupNames} onNameGroup={props.onNameGroup} />}
 
       {view === 'history' && <>
         <HistoryList history={history} onRecord={props.onRecord} onDelete={props.onDelete} />

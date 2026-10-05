@@ -81,6 +81,7 @@ export interface RandomizeSettings {
   playerCount: number
   playerNames: string[]       // who is in each player slot right now
   roster: string[]            // everyone you've saved, offered in the dropdowns
+  groupNames: Record<string, string>  // group key (sorted names joined by |) -> custom name
   rollScope: RollScope
   excluded: Excluded
 }

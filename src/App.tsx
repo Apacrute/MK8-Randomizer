@@ -11,6 +11,7 @@ import {
   rollEverything, rollMapOnly, rollShared, pickForSlot, eligibleMaps,
 } from './lib/roll'
 import { BY_ID, POOL_LABELS } from './lib/catalog'
+import { groupKey, groupMembers } from './lib/playerStats'
 import SetupScreen from './components/SetupScreen'
 import ResultsScreen from './components/ResultsScreen'
 import StatsScreen from './components/StatsScreen'
@@ -38,6 +39,7 @@ export const DEFAULT_SETTINGS: RandomizeSettings = {
   playerCount: 1,
   playerNames: ['', '', '', ''],
   roster: [],
+  groupNames: {},
   rollScope: 'all',
   excluded: { characters: [], karts: [], tires: [], gliders: [], maps: [], prixes: [] },
 }
@@ -248,6 +250,8 @@ export default function App() {
       ...s,
       roster: Array.from(new Set(s.roster.map(r => (r === from ? name : r)))),
       playerNames: s.playerNames.map(n => (n === from ? name : n)),
+      groupNames: Object.fromEntries(Object.entries(s.groupNames).map(([k, v]) =>
+        [groupKey(groupMembers(k).map(n => (n === from ? name : n))), v])),
     }))
     setHistory(h => h.map(e => (e.names.includes(from)
       ? { ...e, names: e.names.map(n => (n === from ? name : n)) } : e)))
@@ -260,6 +264,27 @@ export default function App() {
     roster: s.roster.filter(r => r !== name),
     playerNames: s.playerNames.map(n => (n === name ? '' : n)),
   }))
+
+  // Name (or un-name) a group of players
+  const nameGroup = (key: string, name: string) => setSettings(s => {
+    const groupNames = { ...s.groupNames }
+    if (name.trim()) groupNames[key] = name.trim()
+    else delete groupNames[key]
+    return { ...s, groupNames }
+  })
+
+  // Fill the player slots from a saved group
+  const loadGroup = (key: string) => setSettings(s => {
+    const members = groupMembers(key).slice(0, 4)
+    const roster = [...s.roster]
+    members.forEach(m => { if (!roster.includes(m)) roster.push(m) })
+    return {
+      ...s,
+      roster,
+      playerCount: Math.max(1, members.length),
+      playerNames: [0, 1, 2, 3].map(i => members[i] ?? ''),
+    }
+  })
 
   const eligibleCount = eligibleMaps(settings, stats).length
 
@@ -290,6 +315,7 @@ export default function App() {
             onAddPlayer={addPlayer}
             onRenamePlayer={renamePlayer}
             onRemovePlayer={removePlayer}
+            onLoadGroup={loadGroup}
           />
         )}
         {tab === 'results' && (
@@ -326,6 +352,9 @@ export default function App() {
             onDelete={deleteEntry}
             onRestored={async () => { await loadAll(); showToast({ text: 'Backup restored' }) }}
             onToast={showToast}
+            roster={settings.roster}
+            groupNames={settings.groupNames}
+            onNameGroup={nameGroup}
           />
         )}
       </main>

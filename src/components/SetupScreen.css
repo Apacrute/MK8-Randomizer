@@ -241,3 +241,17 @@
   cursor: pointer;
 }
 .manage-go { color: var(--mk-yellow); font-weight: 800; }
+
+.group-load {
+  width: 100%;
+  height: 42px;
+  margin-top: 10px;
+  border-radius: var(--radius-xs);
+  border: 1px dashed rgba(255,215,0,0.4);
+  background: var(--bg-input);
+  color: var(--mk-yellow);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 0 10px;
+}

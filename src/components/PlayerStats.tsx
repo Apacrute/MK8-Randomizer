@@ -15,7 +15,14 @@ function since(range: Range): number {
   return 0
 }
 
-export default function PlayerStats({ history }: { history: RaceEntry[] }) {
+interface Props {
+  history: RaceEntry[]
+  roster: string[]
+  groupNames: Record<string, string>
+  onNameGroup: (key: string, name: string) => void
+}
+
+export default function PlayerStats({ history, roster, groupNames, onNameGroup }: Props) {
   const [range, setRange] = useState<Range>('all')
   const [mode, setMode] = useState<'players' | 'matchups'>('players')
   const start = since(range)
@@ -37,7 +44,7 @@ export default function PlayerStats({ history }: { history: RaceEntry[] }) {
   )
 
   if (mode === 'matchups') {
-    return <div className="player-stats">{rangeSwitch}<Matchups history={inRange} /></div>
+    return <div className="player-stats">{rangeSwitch}<Matchups history={inRange} roster={roster} groupNames={groupNames} onNameGroup={onNameGroup} /></div>
   }
 
   if (players.length === 0) {

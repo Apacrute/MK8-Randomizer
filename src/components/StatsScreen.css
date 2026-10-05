@@ -415,7 +415,7 @@
   font-size: 13px; font-weight: 800; color: var(--text-muted);
 }
 .matchup-filter select {
-  flex: 1; height: 38px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+  flex: 1; min-width: 0; width: 100%; height: 38px; border-radius: var(--radius-xs); border: 1px solid var(--border);
   background: var(--bg-input); color: var(--text); font-family: 'Nunito', sans-serif;
   font-size: 15px; font-weight: 700; padding: 0 10px;
 }
@@ -441,3 +441,29 @@
 .matchup-extra b { color: var(--text); }
 .pstat-pts { font-family: 'Bangers', cursive; font-weight: 400; font-size: 18px; color: var(--mk-yellow); }
 .matchup-extra { grid-area: extra; font-size: 11px; color: var(--text-muted); }
+
+/* ── Group picking / naming ── */
+.matchup-titles { display: flex; flex-direction: column; min-width: 0; }
+.matchup-sub { font-size: 11px; color: var(--text-muted); font-weight: 700; }
+.pick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pick-chip {
+  padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text-muted); font-weight: 800; font-size: 14px; cursor: pointer;
+}
+.pick-chip.on { border-color: var(--mk-yellow); color: var(--mk-yellow); background: rgba(255,215,0,0.12); }
+.group-name-row { display: flex; gap: 6px; }
+.group-name-input {
+  flex: 1; min-width: 0; height: 40px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text); font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 700; padding: 0 10px; user-select: text; outline: none;
+}
+.group-name-input:focus { border-color: var(--mk-yellow); }
+.group-hist-title { font-family: 'Bangers', cursive; font-weight: 400; font-size: 18px; letter-spacing: 0.5px; color: var(--mk-yellow); margin-top: 4px; }
+.group-race {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+}
+.group-race-head { display: flex; justify-content: space-between; gap: 8px; }
+.group-race-map { font-weight: 800; font-size: 14px; }
+.group-race-date { font-size: 12px; color: var(--text-muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
