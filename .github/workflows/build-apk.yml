@@ -30,7 +30,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
+      # The ubuntu runner ships with the Android SDK preinstalled (ANDROID_HOME).
       - name: Build the APK
         working-directory: android
         run: |
