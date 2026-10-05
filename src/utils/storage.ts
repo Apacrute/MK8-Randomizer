@@ -109,3 +109,25 @@ export async function resetAllStats(): Promise<MapStats> {
   await saveStats(fresh)
   return fresh
 }
+
+// ── Setup screen settings (remembered between app launches) ──
+const SETTINGS_KEY = 'mk8_settings'
+
+export async function loadSettings<T extends object>(defaults: T): Promise<T> {
+  try {
+    const { value } = await Preferences.get({ key: SETTINGS_KEY })
+    // Merge onto defaults so any setting added in a future update still gets a value
+    if (value) return { ...defaults, ...JSON.parse(value) }
+  } catch (e) {
+    console.error('loadSettings error:', e)
+  }
+  return defaults
+}
+
+export async function saveSettings(settings: object): Promise<void> {
+  try {
+    await Preferences.set({ key: SETTINGS_KEY, value: JSON.stringify(settings) })
+  } catch (e) {
+    console.error('saveSettings error:', e)
+  }
+}

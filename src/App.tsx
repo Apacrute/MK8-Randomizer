@@ -12,6 +12,7 @@ import {
   loadStats, incrementMap, incrementPrix,
   resetPlayed, resetCounts, resetPrixCounts, resetAllStats,
   adjustMapCount, setMapCount, adjustPrixCount, setPrixCount,
+  loadSettings, saveSettings,
 } from './utils/storage'
 import { RandomizeSettings, PlayerResult, MapStats, MapItem } from './types'
 import SetupScreen from './components/SetupScreen'
@@ -44,10 +45,22 @@ export default function App() {
   const [stats, setStats] = useState<MapStats>({ counts: {}, played: [], prixCounts: {} })
   const [tab, setTab] = useState<Tab>('setup')
   const [spinning, setSpinning] = useState(false)
+  const [settingsLoaded, setSettingsLoaded] = useState(false)
 
   useEffect(() => {
     loadStats().then(setStats)
+    // Restore the setup from the last time the app was used
+    loadSettings(DEFAULT_SETTINGS).then(saved => {
+      setSettings(saved)
+      setSettingsLoaded(true)
+    })
   }, [])
+
+  // Save the setup whenever it changes (but not before the saved one has loaded,
+  // or the defaults would overwrite it)
+  useEffect(() => {
+    if (settingsLoaded) saveSettings(settings)
+  }, [settings, settingsLoaded])
 
   // Build the pool of maps allowed by the category toggles
   const getCategoryMaps = useCallback((): MapItem[] => {
