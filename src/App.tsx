@@ -6,12 +6,18 @@ import { TIRES } from './data/tires'
 import { HANGERS } from './data/hangers'
 import { MODES } from './data/modes'
 import { MAPS } from './data/maps'
+import { PRIXES } from './data/prixes'
 import { randomItem } from './utils/random'
-import { loadStats, incrementMap, resetPlayed, resetAllStats } from './utils/storage'
+import {
+  loadStats, incrementMap, incrementPrix,
+  resetPlayed, resetCounts, resetPrixCounts, resetAllStats,
+  adjustMapCount, setMapCount, adjustPrixCount, setPrixCount,
+} from './utils/storage'
 import { RandomizeSettings, PlayerResult, MapStats, MapItem } from './types'
 import SetupScreen from './components/SetupScreen'
 import ResultsScreen from './components/ResultsScreen'
 import StatsScreen from './components/StatsScreen'
+import SpinOverlay from './components/SpinOverlay'
 import './App.css'
 
 const DEFAULT_SETTINGS: RandomizeSettings = {
@@ -21,6 +27,7 @@ const DEFAULT_SETTINGS: RandomizeSettings = {
   hanger: true,
   mode: false,
   map: true,
+  prix: false,
   standardMaps: true,
   dlcMaps: true,
   rainbowRoads: false,
@@ -34,7 +41,7 @@ type Tab = 'setup' | 'results' | 'stats'
 export default function App() {
   const [settings, setSettings] = useState<RandomizeSettings>(DEFAULT_SETTINGS)
   const [results, setResults] = useState<PlayerResult[]>([])
-  const [stats, setStats] = useState<MapStats>({ counts: {}, played: [] })
+  const [stats, setStats] = useState<MapStats>({ counts: {}, played: [], prixCounts: {} })
   const [tab, setTab] = useState<Tab>('setup')
   const [spinning, setSpinning] = useState(false)
 
@@ -42,35 +49,43 @@ export default function App() {
     loadStats().then(setStats)
   }, [])
 
-  const getFilteredMaps = useCallback((): MapItem[] => {
-    let maps = MAPS.filter(m =>
+  // Build the pool of maps allowed by the category toggles
+  const getCategoryMaps = useCallback((): MapItem[] => {
+    return MAPS.filter(m =>
       (settings.standardMaps && m.category === 'standard') ||
       (settings.dlcMaps && m.category === 'dlc') ||
       (settings.rainbowRoads && m.category === 'Rainbow Roads') ||
       (settings.tours && m.category === 'Tours')
     )
-    if (settings.noRepeats) {
-      const unplayed = maps.filter(m => !stats.played.includes(m.id))
-      // if all played, use full pool (auto-reset behaviour)
-      maps = unplayed.length > 0 ? unplayed : maps
-    }
-    return maps
-  }, [settings, stats])
+  }, [settings])
+
+  // FEATURE #4: "play-count leveling" no-repeat logic.
+  // Instead of stopping after one pass, we always pick only from the maps
+  // that have the LOWEST play count in the current pool. So if every map is at
+  // 3 plays, all of them are eligible; once some climb to 4, only the maps
+  // still at 3 are eligible until they catch up. Never needs a manual reset.
+  const getEligibleMaps = useCallback((pool: MapItem[], currentStats: MapStats): MapItem[] => {
+    if (!settings.noRepeats || pool.length === 0) return pool
+    const counts = pool.map(m => currentStats.counts[m.id] || 0)
+    const minCount = Math.min(...counts)
+    return pool.filter(m => (currentStats.counts[m.id] || 0) === minCount)
+  }, [settings.noRepeats])
 
   const handleRandomize = useCallback(async () => {
     if (spinning) return
     setSpinning(true)
 
-    const filteredMaps = getFilteredMaps()
-    const newResults: PlayerResult[] = []
+    const categoryMaps = getCategoryMaps()
+    const eligibleMaps = getEligibleMaps(categoryMaps, stats)
 
-    // Each player gets independent character/kart/tire/hanger
-    // Mode and Map are shared across all players (one race = one track/mode)
+    // Map and mode and prix are shared across all players (one race = one of each)
     const sharedMode = settings.mode ? randomItem(MODES) : null
-    const sharedMap = settings.map && filteredMaps.length > 0
-      ? randomItem(filteredMaps)
+    const sharedMap = settings.map && eligibleMaps.length > 0
+      ? randomItem(eligibleMaps)
       : null
+    const sharedPrix = settings.prix ? randomItem(PRIXES) : null
 
+    const newResults: PlayerResult[] = []
     for (let i = 0; i < settings.playerCount; i++) {
       newResults.push({
         character: settings.character ? randomItem(CHARACTERS) : null,
@@ -79,54 +94,53 @@ export default function App() {
         hanger: settings.hanger ? randomItem(HANGERS) : null,
         mode: sharedMode,
         map: sharedMap,
+        prix: sharedPrix,
       })
     }
 
     setResults(newResults)
 
-    // Track map play
-    if (sharedMap) {
-      const newStats = await incrementMap(sharedMap.id)
-      setStats(newStats)
-    }
+    // Update counters (map + prix tracked separately)
+    let updated = stats
+    if (sharedMap) updated = await incrementMap(sharedMap.id)
+    if (sharedPrix) updated = await incrementPrix(sharedPrix.id)
+    if (sharedMap || sharedPrix) setStats(updated)
 
+    // FEATURE #3: keep the spin overlay up briefly so it's obvious the roll fired,
+    // even when the same map comes up twice in a row.
     setTimeout(() => {
       setSpinning(false)
       setTab('results')
-    }, 600)
-  }, [spinning, settings, getFilteredMaps])
+    }, 900)
+  }, [spinning, settings, stats, getCategoryMaps, getEligibleMaps])
 
-  const handleResetPlayed = async () => {
-    const newStats = await resetPlayed()
-    setStats(newStats)
-  }
+  // ── Stat handlers (Feature #1 manual adjust + resets) ──
+  const handleAdjustMap = async (id: string, delta: number) => setStats(await adjustMapCount(id, delta))
+  const handleSetMap = async (id: string, value: number) => setStats(await setMapCount(id, value))
+  const handleAdjustPrix = async (id: string, delta: number) => setStats(await adjustPrixCount(id, delta))
+  const handleSetPrix = async (id: string, value: number) => setStats(await setPrixCount(id, value))
+  const handleResetPlayed = async () => setStats(await resetPlayed())
+  const handleResetCounts = async () => setStats(await resetCounts())
+  const handleResetPrix = async () => setStats(await resetPrixCounts())
+  const handleResetAll = async () => setStats(await resetAllStats())
 
-  const handleResetAll = async () => {
-    const newStats = await resetAllStats()
-    setStats(newStats)
-  }
-
-  const availableMaps = getFilteredMaps()
-  const remainingMaps = settings.noRepeats
-    ? availableMaps.filter(m => !stats.played.includes(m.id))
-    : availableMaps
+  const categoryMaps = getCategoryMaps()
+  const eligibleCount = getEligibleMaps(categoryMaps, stats).length
 
   return (
     <div className="app">
-      {/* Header */}
       <header className="app-header">
         <div className="header-title">
           <span className="header-icon">🏎️</span>
           <span>MK8 Randomizer</span>
         </div>
-        {tab === 'setup' && settings.noRepeats && (
+        {tab === 'setup' && settings.noRepeats && settings.map && (
           <div className="remaining-badge">
-            {remainingMaps.length} maps left
+            {eligibleCount} up next
           </div>
         )}
       </header>
 
-      {/* Content */}
       <main className="app-content">
         {tab === 'setup' && (
           <SetupScreen
@@ -134,13 +148,12 @@ export default function App() {
             onSettingsChange={setSettings}
             onRandomize={handleRandomize}
             spinning={spinning}
-            availableMapCount={availableMaps.length}
+            availableMapCount={categoryMaps.length}
           />
         )}
         {tab === 'results' && (
           <ResultsScreen
             results={results}
-            settings={settings}
             stats={stats}
             onReRandomize={handleRandomize}
             spinning={spinning}
@@ -149,18 +162,19 @@ export default function App() {
         {tab === 'stats' && (
           <StatsScreen
             stats={stats}
-            onResetPlayed={handleResetPlayed}
+            onAdjustMap={handleAdjustMap}
+            onSetMap={handleSetMap}
+            onAdjustPrix={handleAdjustPrix}
+            onSetPrix={handleSetPrix}
+            onResetCounts={handleResetCounts}
+            onResetPrix={handleResetPrix}
             onResetAll={handleResetAll}
           />
         )}
       </main>
 
-      {/* Bottom Nav */}
       <nav className="bottom-nav">
-        <button
-          className={`nav-btn ${tab === 'setup' ? 'active' : ''}`}
-          onClick={() => setTab('setup')}
-        >
+        <button className={`nav-btn ${tab === 'setup' ? 'active' : ''}`} onClick={() => setTab('setup')}>
           <span className="nav-icon">⚙️</span>
           <span className="nav-label">Setup</span>
         </button>
@@ -171,21 +185,18 @@ export default function App() {
           <span className="nav-icon">🎲</span>
           <span className="nav-label">Roll!</span>
         </button>
-        <button
-          className={`nav-btn ${tab === 'results' ? 'active' : ''}`}
-          onClick={() => setTab('results')}
-        >
+        <button className={`nav-btn ${tab === 'results' ? 'active' : ''}`} onClick={() => setTab('results')}>
           <span className="nav-icon">🏆</span>
           <span className="nav-label">Results</span>
         </button>
-        <button
-          className={`nav-btn ${tab === 'stats' ? 'active' : ''}`}
-          onClick={() => setTab('stats')}
-        >
+        <button className={`nav-btn ${tab === 'stats' ? 'active' : ''}`} onClick={() => setTab('stats')}>
           <span className="nav-icon">📊</span>
           <span className="nav-label">Stats</span>
         </button>
       </nav>
+
+      {/* FEATURE #3: full-screen spin animation */}
+      {spinning && <SpinOverlay />}
     </div>
   )
 }

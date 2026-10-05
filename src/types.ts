@@ -11,6 +11,11 @@ export interface MapItem extends GameItem {
   category: MapCategory
 }
 
+// Re-export prix types so other files can import from one place if they want
+export type { PrixItem, PrixCategory } from './data/prixes'
+
+import type { PrixItem } from './data/prixes'
+
 export interface PlayerResult {
   character: GameItem | null
   kart: GameItem | null
@@ -18,11 +23,13 @@ export interface PlayerResult {
   hanger: GameItem | null
   mode: GameItem | null
   map: MapItem | null
+  prix: PrixItem | null
 }
 
 export interface MapStats {
-  counts: Record<string, number>
-  played: string[]
+  counts: Record<string, number>        // map id -> times played
+  played: string[]                      // map ids that have been played (legacy, kept for compatibility)
+  prixCounts: Record<string, number>    // prix id -> times played
 }
 
 export interface RandomizeSettings {
@@ -32,6 +39,7 @@ export interface RandomizeSettings {
   hanger: boolean
   mode: boolean
   map: boolean
+  prix: boolean
   standardMaps: boolean
   dlcMaps: boolean
   rainbowRoads: boolean

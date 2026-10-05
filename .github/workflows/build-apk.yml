@@ -1,0 +1,49 @@
+name: Build APK
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node side: build the React web app and sync it into the Android project
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install web dependencies
+        run: npm ci
+      - name: Build the web app
+        run: npm run build
+      - name: Sync web build into Android (Capacitor)
+        run: npx cap sync android
+
+      # Android side: build and sign the APK
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - name: Build the APK
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk MK8-Randomizer.apk
+
+      - name: Publish it as a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: MK8 Randomizer 1.0.${{ github.run_number }}
+          make_latest: true
+          files: MK8-Randomizer.apk

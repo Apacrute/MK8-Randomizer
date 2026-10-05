@@ -45,7 +45,6 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
   return (
     <div className="setup-screen">
 
-      {/* Player Count */}
       <section className="setup-section">
         <h2 className="section-title">👥 Players</h2>
         <div className="player-count-row">
@@ -59,10 +58,9 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
             </button>
           ))}
         </div>
-        <p className="section-hint">Each player gets their own character, kart, tires & glider. Map and mode are shared.</p>
+        <p className="section-hint">Each player gets their own character, kart, tires & glider. Map, engine class and cup are shared.</p>
       </section>
 
-      {/* Loadout */}
       <section className="setup-section">
         <h2 className="section-title">🎮 Loadout</h2>
         <div className="toggle-group">
@@ -73,7 +71,6 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
         </div>
       </section>
 
-      {/* Mode */}
       <section className="setup-section">
         <h2 className="section-title">⚡ Engine Class</h2>
         <div className="toggle-group">
@@ -81,7 +78,20 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
         </div>
       </section>
 
-      {/* Map */}
+      {/* FEATURE #2: Prix / Cup randomizer */}
+      <section className="setup-section">
+        <h2 className="section-title">🏆 Cup (Prix)</h2>
+        <div className="toggle-group">
+          <Toggle
+            label="Randomize Cup"
+            sublabel="Picks 1 of all 24 cups · tracked separately"
+            checked={settings.prix}
+            onChange={() => set('prix', !settings.prix)}
+            accent="#ffd700"
+          />
+        </div>
+      </section>
+
       <section className="setup-section">
         <h2 className="section-title">🗺️ Map</h2>
         <div className="toggle-group">
@@ -106,7 +116,7 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
             <div className="toggle-group" style={{ marginTop: 8 }}>
               <Toggle
                 label="🚫 No Repeats"
-                sublabel="Exclude already-played maps until all are done"
+                sublabel="Always picks from the least-played maps first — auto-balances, never needs resetting"
                 checked={settings.noRepeats}
                 onChange={() => set('noRepeats', !settings.noRepeats)}
                 accent="#ff6b00"
@@ -116,7 +126,6 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
         )}
       </section>
 
-      {/* Big Randomize Button */}
       <div className="randomize-btn-wrap">
         <button
           className={`randomize-btn ${spinning ? 'spinning' : ''}`}

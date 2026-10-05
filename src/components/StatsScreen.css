@@ -7,6 +7,35 @@
   animation: fadeUp 0.3s ease;
 }
 
+/* ── View switch (Maps / Cups) ── */
+.view-switch {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-input);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.view-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-xs);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.view-btn.active {
+  background: var(--mk-yellow);
+  color: #1a1a2e;
+}
+
 /* ── Summary ── */
 .stats-summary {
   display: grid;
@@ -32,10 +61,7 @@
   line-height: 1;
 }
 
-.stat-denom {
-  font-size: 18px;
-  color: var(--text-muted);
-}
+.stat-denom { font-size: 18px; color: var(--text-muted); }
 
 .stat-label {
   font-size: 10px;
@@ -43,56 +69,14 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
+  text-align: center;
 }
 
-/* ── Most Played ── */
-.most-played-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  border: 1px solid rgba(255,215,0,0.25);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-right: 16px;
-}
-
-.mp-img-wrap {
-  width: 100px;
-  height: 60px;
-  flex-shrink: 0;
-}
-
-.mp-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mp-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-}
-
-.mp-label {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--mk-yellow);
-  letter-spacing: 0.5px;
-}
-
-.mp-name {
-  font-weight: 800;
-  font-size: 15px;
-  color: var(--text);
-}
-
-.mp-count {
+.edit-hint {
   font-size: 12px;
   color: var(--text-muted);
+  text-align: center;
+  padding: 2px 0;
 }
 
 /* ── Controls ── */
@@ -139,7 +123,7 @@
   color: var(--mk-yellow);
 }
 
-/* ── Map List ── */
+/* ── List ── */
 .stats-map-list {
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -147,7 +131,6 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  divide-color: var(--border);
 }
 
 .stats-map-row {
@@ -158,13 +141,8 @@
   border-bottom: 1px solid var(--border);
 }
 
-.stats-map-row:last-child {
-  border-bottom: none;
-}
-
-.stats-map-row.unplayed {
-  opacity: 0.65;
-}
+.stats-map-row:last-child { border-bottom: none; }
+.stats-map-row.unplayed { opacity: 0.7; }
 
 .stats-map-img-wrap {
   position: relative;
@@ -176,16 +154,20 @@
   background: var(--bg-input);
 }
 
-.stats-map-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.stats-map-img { width: 100%; height: 100%; object-fit: cover; }
 
-.unplayed-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
+.unplayed-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
+
+/* Prix emblem tile in the list */
+.stats-prix-emblem {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
 }
 
 .stats-map-info {
@@ -211,23 +193,78 @@
   letter-spacing: 0.3px;
 }
 
-.stats-map-count {
+/* ── Stepper (− value +) ── */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
 }
 
-.count-badge {
-  font-family: 'Bangers', cursive;
+.stepper-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
   font-size: 20px;
-  color: var(--mk-yellow);
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+}
+
+.stepper-btn:active:not(:disabled) { transform: scale(0.88); }
+.stepper-btn:disabled { opacity: 0.3; cursor: default; }
+
+.stepper-btn.plus { border-color: rgba(0,166,81,0.4); color: var(--mk-green); }
+.stepper-btn.minus { border-color: rgba(232,0,28,0.4); color: var(--mk-red); }
+
+.stepper-value {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  font-family: 'Bangers', cursive;
+  font-size: 22px;
   letter-spacing: 0.5px;
+  color: var(--mk-yellow);
+  text-align: center;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: background 0.12s;
 }
 
-.unplayed-badge {
+.stepper-value:active { background: rgba(255,255,255,0.06); }
+
+.stepper-input {
+  width: 48px;
+  height: 32px;
+  border: 1px solid var(--mk-yellow);
+  border-radius: var(--radius-xs);
+  background: var(--bg-input);
+  color: var(--text);
   font-size: 16px;
-  color: var(--text-dim);
+  font-weight: 700;
+  text-align: center;
+  padding: 0 2px;
+  -moz-appearance: textfield;
 }
 
-/* ── Reset Buttons ── */
+.stepper-input::-webkit-outer-spin-button,
+.stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ── Resets ── */
 .reset-section {
   display: flex;
   flex-direction: column;
@@ -249,9 +286,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.reset-btn:active {
-  transform: scale(0.98);
-}
+.reset-btn:active { transform: scale(0.98); }
 
 .reset-btn.confirming {
   border-color: var(--mk-orange);
@@ -259,11 +294,5 @@
   background: rgba(255,107,0,0.08);
 }
 
-.reset-btn.danger {
-  border-color: rgba(232,0,28,0.3);
-  color: var(--mk-red);
-}
-
-.reset-btn.danger.confirming {
-  background: rgba(232,0,28,0.1);
-}
+.reset-btn.danger { border-color: rgba(232,0,28,0.3); color: var(--mk-red); }
+.reset-btn.danger.confirming { background: rgba(232,0,28,0.1); }

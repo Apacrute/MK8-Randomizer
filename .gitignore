@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+android/app/build/
+android/build/
+android/.gradle/
+*.apk
+
+# Stray archives / duplicate project copy
+mk8-capacitor.zip
+mk8-capacitor/
+
+# OS / editor
+.DS_Store
+*.log

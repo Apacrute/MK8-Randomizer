@@ -1,10 +1,9 @@
 // src/components/ResultsScreen.tsx
-import { PlayerResult, RandomizeSettings, MapStats } from '../types'
+import { PlayerResult, MapStats } from '../types'
 import './ResultsScreen.css'
 
 interface Props {
   results: PlayerResult[]
-  settings: RandomizeSettings
   stats: MapStats
   onReRandomize: () => void
   spinning: boolean
@@ -30,7 +29,7 @@ function ItemCard({ label, name, image }: { label: string; name: string; image: 
   )
 }
 
-export default function ResultsScreen({ results, settings, stats, onReRandomize, spinning }: Props) {
+export default function ResultsScreen({ results, stats, onReRandomize, spinning }: Props) {
   if (results.length === 0) {
     return (
       <div className="results-empty">
@@ -41,15 +40,32 @@ export default function ResultsScreen({ results, settings, stats, onReRandomize,
     )
   }
 
-  // Shared across all players
   const sharedMap = results[0]?.map
   const sharedMode = results[0]?.mode
+  const sharedPrix = results[0]?.prix
   const mapCount = sharedMap ? (stats.counts[sharedMap.id] || 0) : 0
+  const prixCount = sharedPrix ? (stats.prixCounts[sharedPrix.id] || 0) : 0
 
   return (
     <div className="results-screen">
 
-      {/* Shared results: Map + Mode */}
+      {/* FEATURE #2: Prix result card */}
+      {sharedPrix && (
+        <section
+          className="prix-result-card"
+          style={{ '--prix-color': sharedPrix.color } as React.CSSProperties}
+        >
+          <div className="prix-emblem">{sharedPrix.emblem}</div>
+          <div className="prix-info">
+            <span className="prix-label">🏆 Cup</span>
+            <span className="prix-name">{sharedPrix.name}</span>
+          </div>
+          {prixCount > 0 && (
+            <span className="prix-count-badge">{prixCount}×</span>
+          )}
+        </section>
+      )}
+
       {(sharedMap || sharedMode) && (
         <section className="shared-section">
           {sharedMap && (
@@ -64,9 +80,7 @@ export default function ResultsScreen({ results, settings, stats, onReRandomize,
                 <div className="map-overlay">
                   <span className="map-category-badge">{sharedMap.category}</span>
                   {mapCount > 0 && (
-                    <span className="map-count-badge">
-                      🏁 Played {mapCount}×
-                    </span>
+                    <span className="map-count-badge">🏁 Played {mapCount}×</span>
                   )}
                 </div>
               </div>
@@ -91,34 +105,26 @@ export default function ResultsScreen({ results, settings, stats, onReRandomize,
         </section>
       )}
 
-      {/* Per-player loadouts */}
-      {results.map((result, i) => (
-        <section
-          key={i}
-          className="player-section"
-          style={{ '--player-color': PLAYER_COLORS[i] } as React.CSSProperties}
-        >
-          {results.length > 1 && (
-            <h3 className="player-heading">{PLAYER_LABELS[i]}</h3>
-          )}
-          <div className="loadout-grid">
-            {result.character && (
-              <ItemCard label="Character" name={result.character.name} image={result.character.image} />
-            )}
-            {result.kart && (
-              <ItemCard label="Kart" name={result.kart.name} image={result.kart.image} />
-            )}
-            {result.tire && (
-              <ItemCard label="Tires" name={result.tire.name} image={result.tire.image} />
-            )}
-            {result.hanger && (
-              <ItemCard label="Glider" name={result.hanger.name} image={result.hanger.image} />
-            )}
-          </div>
-        </section>
-      ))}
+      {results.map((result, i) => {
+        const hasLoadout = result.character || result.kart || result.tire || result.hanger
+        if (!hasLoadout) return null
+        return (
+          <section
+            key={i}
+            className="player-section"
+            style={{ '--player-color': PLAYER_COLORS[i] } as React.CSSProperties}
+          >
+            {results.length > 1 && <h3 className="player-heading">{PLAYER_LABELS[i]}</h3>}
+            <div className="loadout-grid">
+              {result.character && <ItemCard label="Character" name={result.character.name} image={result.character.image} />}
+              {result.kart && <ItemCard label="Kart" name={result.kart.name} image={result.kart.image} />}
+              {result.tire && <ItemCard label="Tires" name={result.tire.name} image={result.tire.image} />}
+              {result.hanger && <ItemCard label="Glider" name={result.hanger.name} image={result.hanger.image} />}
+            </div>
+          </section>
+        )
+      })}
 
-      {/* Re-roll */}
       <div className="reroll-wrap">
         <button
           className={`reroll-btn ${spinning ? 'spinning' : ''}`}

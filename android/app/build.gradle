@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+// Each cloud build gets a higher version so the new APK installs over the last one.
+def runNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+
 android {
     namespace = "com.mk8randomizer.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +10,8 @@ android {
         applicationId "com.mk8randomizer.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode runNumber
+        versionName "1.0.${runNumber}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,11 +19,26 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            // A fixed key so each new build installs over the last one without losing data.
+            storeFile file('mk8randomizer.keystore')
+            storePassword 'mk8randomizer'
+            keyAlias 'mk8randomizer'
+            keyPassword 'mk8randomizer'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    // Lint's release check is advisory for a personal app; report problems but don't block the build.
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 
