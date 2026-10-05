@@ -32,7 +32,8 @@ export default function Matchups({ history }: { history: RaceEntry[] }) {
 
       {list.map(m => {
         const top = m.members[0]
-        const leader = top && top.wins > 0 && (m.members[1]?.wins ?? -1) < top.wins ? top.name : null
+        const leader = top && top.points > 0 && (m.members[1]?.points ?? -1) < top.points ? top.name : null
+        const maxPts = Math.max(1, ...m.members.map(x => x.points))
         return (
           <section className="matchup-card" key={m.key}>
             <div className="matchup-head">
@@ -40,14 +41,18 @@ export default function Matchups({ history }: { history: RaceEntry[] }) {
               <span className="matchup-races">{m.races} race{m.races === 1 ? '' : 's'}</span>
             </div>
             {m.members.map(p => {
-              const pct = m.races ? Math.round((p.wins / m.races) * 100) : 0
+              const places = Object.entries(p.places)
+                .sort((a, b) => Number(a[0]) - Number(b[0]))
+                .map(([place, n]) => `${ordinal(Number(place))}${n > 1 ? ` ×${n}` : ''}`)
+                .join(' · ')
               return (
                 <div className="matchup-row" key={p.name}>
                   <span className="matchup-name">{p.name === leader ? '👑 ' : ''}{p.name}</span>
-                  <div className="matchup-bar"><div className="matchup-fill" style={{ width: `${pct}%` }} /></div>
-                  <span className="matchup-wins">{p.wins} win{p.wins === 1 ? '' : 's'}</span>
+                  <div className="matchup-bar"><div className="matchup-fill" style={{ width: `${(p.points / maxPts) * 100}%` }} /></div>
+                  <span className="matchup-pts">{p.points}<small> pts</small></span>
                   <span className="matchup-extra">
-                    {p.avgPlace ? `avg ${ordinal(Math.round(p.avgPlace))}` : ''}
+                    <b>{p.wins}W–{p.losses}L</b>
+                    {places ? ` · ${places}` : ''}
                     {p.great ? ` · 🔥${p.great}` : ''}{p.rough ? ` · 💀${p.rough}` : ''}
                   </span>
                 </div>
@@ -56,7 +61,10 @@ export default function Matchups({ history }: { history: RaceEntry[] }) {
           </section>
         )
       })}
-      <p className="edit-hint">A win = best placement among that group in a race (doesn't have to be 1st). Ties count as a win for each.</p>
+      <p className="edit-hint">
+        Points use Mario Kart scoring: 1st 15 · 2nd 12 · 3rd 10 · 4th 9 · 5th 8 … 12th 1.
+        A win = best placement in that group for the race (doesn't have to be 1st); ties count as a win for each.
+      </p>
     </div>
   )
 }

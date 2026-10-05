@@ -2,10 +2,17 @@
 // Build per-player and per-map winner stats from recorded races.
 import { RaceEntry } from '../types'
 
+// Mario Kart 8 race points: 1st 15, 2nd 12, 3rd 10, 4th 9 ... 12th 1
+export const RACE_POINTS = [15, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+export function pointsFor(place: number | null | undefined): number {
+  return place ? RACE_POINTS[place - 1] ?? 0 : 0
+}
+
 export interface PlayerStat {
   name: string
   races: number          // races with a recorded result
   groupWins: number      // beat everyone else in the group (ties share it)
+  points: number         // MK8 race points across all recorded races
   firsts: number         // finished 1st overall
   podiums: number        // finished top 3
   avgPlace: number | null
@@ -34,13 +41,14 @@ export function buildPlayerStats(history: RaceEntry[]): PlayerStat[] {
       const r = e.results![i]
       if (!r || (r.place === null && r.rating === null)) return
       const s = by[name] ??= {
-        name, races: 0, groupWins: 0, firsts: 0, podiums: 0, avgPlace: null, great: 0, rough: 0,
+        name, races: 0, groupWins: 0, points: 0, firsts: 0, podiums: 0, avgPlace: null, great: 0, rough: 0,
         bestMaps: [], placeSum: 0, placed: 0, mapWins: {},
       }
       s.races++
       if (r.place !== null) {
         s.placeSum += r.place
         s.placed++
+        s.points += pointsFor(r.place)
         if (r.place === 1) s.firsts++
         if (r.place <= 3) s.podiums++
       }
@@ -58,6 +66,7 @@ export function buildPlayerStats(history: RaceEntry[]): PlayerStat[] {
       name: s.name,
       races: s.races,
       groupWins: s.groupWins,
+      points: s.points,
       firsts: s.firsts,
       podiums: s.podiums,
       avgPlace: s.placed ? s.placeSum / s.placed : null,
@@ -96,7 +105,10 @@ export function mapChampions(history: RaceEntry[]): Record<string, { name: strin
 // ── Matchups: how each exact group of players does against each other ──
 export interface MatchupMember {
   name: string
+  points: number          // MK8 race points in races with this group
   wins: number            // best placement among this group in a race
+  losses: number          // placed, but someone in the group finished higher
+  places: Record<number, number>   // finishing place -> how many times
   avgPlace: number | null
   great: number
   rough: number
@@ -106,11 +118,14 @@ export interface Matchup {
   key: string             // sorted names, e.g. "Connor|Drew"
   names: string[]
   races: number
-  members: MatchupMember[]   // sorted by wins
+  members: MatchupMember[]   // sorted by points
 }
 
+interface Tally { wins: number; sum: number; n: number; great: number; rough: number; points: number; places: Record<number, number> }
+const emptyTally = (): Tally => ({ wins: 0, sum: 0, n: 0, great: 0, rough: 0, points: 0, places: {} })
+
 export function buildMatchups(history: RaceEntry[]): Matchup[] {
-  const groups: Record<string, { names: string[]; races: number; m: Record<string, { wins: number; sum: number; n: number; great: number; rough: number }> }> = {}
+  const groups: Record<string, { names: string[]; races: number; m: Record<string, Tally> }> = {}
 
   for (const e of history) {
     if (!e.results || e.names.length < 2) continue
@@ -123,9 +138,13 @@ export function buildMatchups(history: RaceEntry[]): Matchup[] {
     const winners = groupWinners(e)
     e.names.forEach((name, i) => {
       const r = e.results![i]
-      const s = g.m[name] ??= { wins: 0, sum: 0, n: 0, great: 0, rough: 0 }
+      const s = g.m[name] ??= emptyTally()
       if (winners.includes(i)) s.wins++
-      if (r?.place != null) { s.sum += r.place; s.n++ }
+      if (r?.place != null) {
+        s.sum += r.place; s.n++
+        s.points += pointsFor(r.place)
+        s.places[r.place] = (s.places[r.place] || 0) + 1
+      }
       if (r?.rating === 'great') s.great++
       if (r?.rating === 'rough') s.rough++
     })
@@ -138,10 +157,13 @@ export function buildMatchups(history: RaceEntry[]): Matchup[] {
       races: g.races,
       members: g.names
         .map(name => {
-          const s = g.m[name] ?? { wins: 0, sum: 0, n: 0, great: 0, rough: 0 }
-          return { name, wins: s.wins, avgPlace: s.n ? s.sum / s.n : null, great: s.great, rough: s.rough }
+          const s = g.m[name] ?? emptyTally()
+          return {
+            name, points: s.points, wins: s.wins, losses: Math.max(0, s.n - s.wins), places: s.places,
+            avgPlace: s.n ? s.sum / s.n : null, great: s.great, rough: s.rough,
+          }
         })
-        .sort((a, b) => b.wins - a.wins || (a.avgPlace ?? 99) - (b.avgPlace ?? 99)),
+        .sort((a, b) => b.points - a.points || b.wins - a.wins || (a.avgPlace ?? 99) - (b.avgPlace ?? 99)),
     }))
     .sort((a, b) => b.races - a.races || a.names.length - b.names.length)
 }

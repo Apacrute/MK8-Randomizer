@@ -60,7 +60,7 @@ export default function PlayerStats({ history }: { history: RaceEntry[] }) {
           <div className="pstat-head">
             <span className="pstat-rank">{rank === 0 && p.groupWins > 0 ? '👑' : `#${rank + 1}`}</span>
             <span className="pstat-name">{p.name}</span>
-            <span className="pstat-races">{p.races} race{p.races === 1 ? '' : 's'}</span>
+            <span className="pstat-races"><b className="pstat-pts">{p.points}</b> pts · {p.races} race{p.races === 1 ? '' : 's'}</span>
           </div>
           <div className="pstat-grid">
             <div className="pstat"><b>{p.groupWins}</b><span>Race wins</span></div>

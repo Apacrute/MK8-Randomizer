@@ -428,7 +428,7 @@
 .matchup-races { font-size: 12px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
 .matchup-row {
   display: grid;
-  grid-template-columns: 96px 1fr 58px;
+  grid-template-columns: 96px 1fr 64px;
   grid-template-areas: "name bar wins" "name extra extra";
   align-items: center;
   column-gap: 10px;
@@ -436,5 +436,8 @@
 .matchup-name { grid-area: name; font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .matchup-bar { grid-area: bar; height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
 .matchup-fill { height: 100%; background: var(--mk-yellow); border-radius: 4px; }
-.matchup-wins { grid-area: wins; font-size: 13px; font-weight: 800; text-align: right; }
+.matchup-pts { grid-area: wins; font-family: 'Bangers', cursive; font-size: 22px; letter-spacing: 0.5px; text-align: right; color: var(--mk-yellow); }
+.matchup-pts small { font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 800; color: var(--text-muted); }
+.matchup-extra b { color: var(--text); }
+.pstat-pts { font-family: 'Bangers', cursive; font-weight: 400; font-size: 18px; color: var(--mk-yellow); }
 .matchup-extra { grid-area: extra; font-size: 11px; color: var(--text-muted); }
