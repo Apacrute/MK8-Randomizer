@@ -15,11 +15,12 @@ export const TIRES: GameItem[] = [
   { id: "MK8-TriforceTires", name: "Triforce Tires", image: "images/tires/MK8-TriforceTires.png" },
   { id: "MonsterTiresMK8", name: "Monster Tires", image: "images/tires/MonsterTiresMK8.png" },
   { id: "Off-Road", name: "Off Road", image: "images/tires/Off-Road.png" },
-  { id: "Retro_Off-Road", name: "Retro Off Road", image: "images/tires/Retro_Off-Road.png" },
+  { id: "Retro_Off-Road", name: "Retro Off Road", image: "images/tires/Retro_Off-Road (1).png" },
   { id: "RollerTiresMK8", name: "Roller Tires", image: "images/tires/RollerTiresMK8.png" },
   { id: "SlickTiresMK8", name: "Slick Tires", image: "images/tires/SlickTiresMK8.png" },
   { id: "SlimTiresMK8", name: "Slim Tires", image: "images/tires/SlimTiresMK8.png" },
   { id: "SpongeTiresMK8", name: "Sponge Tires", image: "images/tires/SpongeTiresMK8.png" },
   { id: "StandardTiresMK8", name: "Standard Tires", image: "images/tires/StandardTiresMK8.png" },
   { id: "WoodTiresMK8", name: "Wood Tires", image: "images/tires/WoodTiresMK8.png" },
+  { id: "AncientTiresMK8", name: "Ancient Tires", image: "images/tires/AncientTiresMK8.png" },
 ]

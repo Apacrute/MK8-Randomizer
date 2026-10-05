@@ -191,3 +191,53 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+/* ── Player names ── */
+.name-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-input);
+  border-radius: var(--radius-xs);
+  border-left: 3px solid var(--player-color, var(--mk-red));
+  padding: 4px 4px 4px 12px;
+}
+.name-tag {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  color: var(--player-color, var(--mk-yellow));
+  width: 26px;
+}
+.name-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  user-select: text;
+  outline: none;
+}
+.name-input::placeholder { color: var(--text-dim); }
+
+/* ── Banned items ── */
+.manage-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.manage-go { color: var(--mk-yellow); font-weight: 800; }

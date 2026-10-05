@@ -1,18 +1,18 @@
 // src/components/SetupScreen.tsx
-import { RandomizeSettings } from '../types'
+import { useState } from 'react'
+import { RandomizeSettings, PoolKey } from '../types'
+import { mapPool } from '../lib/roll'
+import PoolManager from './PoolManager'
 import './SetupScreen.css'
 
 interface Props {
   settings: RandomizeSettings
   onSettingsChange: (s: RandomizeSettings) => void
   onRandomize: () => void
-  spinning: boolean
-  availableMapCount: number
+  onToggleBan: (pool: PoolKey, id: string) => void
 }
 
-function Toggle({
-  label, sublabel, checked, onChange, accent
-}: {
+function Toggle({ label, sublabel, checked, onChange, accent }: {
   label: string
   sublabel?: string
   checked: boolean
@@ -29,18 +29,38 @@ function Toggle({
         <span className="toggle-label">{label}</span>
         {sublabel && <span className="toggle-sublabel">{sublabel}</span>}
       </div>
-      <div className="toggle-switch">
-        <div className="toggle-thumb" />
-      </div>
+      <div className="toggle-switch"><div className="toggle-thumb" /></div>
     </button>
   )
 }
 
-export default function SetupScreen({ settings, onSettingsChange, onRandomize, spinning, availableMapCount }: Props) {
-  const set = (key: keyof RandomizeSettings, val: boolean | number) =>
+const PLAYER_COLORS = ['#e8001c', '#0057b8', '#00a651', '#ff6b00']
+
+export default function SetupScreen({ settings, onSettingsChange, onRandomize, onToggleBan }: Props) {
+  const [managing, setManaging] = useState(false)
+  const set = <K extends keyof RandomizeSettings>(key: K, val: RandomizeSettings[K]) =>
     onSettingsChange({ ...settings, [key]: val })
 
-  const noMapCategorySelected = !settings.standardMaps && !settings.dlcMaps && !settings.rainbowRoads && !settings.tours
+  const setName = (i: number, name: string) => {
+    const names = [...settings.playerNames]
+    names[i] = name
+    set('playerNames', names)
+  }
+
+  const noMapCategory = !settings.standardMaps && !settings.dlcMaps && !settings.rainbowRoads && !settings.tours
+  const mapCount = mapPool(settings).length
+  const bannedTotal = Object.values(settings.excluded).reduce((n, l) => n + l.length, 0)
+
+  if (managing) {
+    return (
+      <PoolManager
+        excluded={settings.excluded}
+        onToggle={onToggleBan}
+        onClearPool={pool => set('excluded', { ...settings.excluded, [pool]: [] })}
+        onClose={() => setManaging(false)}
+      />
+    )
+  }
 
   return (
     <div className="setup-screen">
@@ -49,16 +69,36 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
         <h2 className="section-title">👥 Players</h2>
         <div className="player-count-row">
           {[1, 2, 3, 4].map(n => (
-            <button
-              key={n}
+            <button key={n}
               className={`player-btn ${settings.playerCount === n ? 'active' : ''}`}
-              onClick={() => set('playerCount', n)}
-            >
+              onClick={() => set('playerCount', n)}>
               {n}P
             </button>
           ))}
         </div>
-        <p className="section-hint">Each player gets their own character, kart, tires & glider. Map, engine class and cup are shared.</p>
+        <div className="name-list">
+          {Array.from({ length: settings.playerCount }, (_, i) => (
+            <label className="name-row" key={i} style={{ '--player-color': PLAYER_COLORS[i] } as React.CSSProperties}>
+              <span className="name-tag">P{i + 1}</span>
+              <input
+                className="name-input"
+                value={settings.playerNames[i] || ''}
+                placeholder={`Player ${i + 1} name`}
+                maxLength={20}
+                onChange={e => setName(i, e.target.value)}
+              />
+            </label>
+          ))}
+        </div>
+        {settings.playerCount > 1 && (
+          <div className="toggle-group" style={{ marginTop: 10 }}>
+            <Toggle label="👯 Different for everyone"
+              sublabel="No two players get the same character, kart, tires or glider"
+              checked={settings.uniqueLoadouts}
+              onChange={() => set('uniqueLoadouts', !settings.uniqueLoadouts)} accent="#00a651" />
+          </div>
+        )}
+        <p className="section-hint">Names are used for placements and stats. Map, cup and rules are shared.</p>
       </section>
 
       <section className="setup-section">
@@ -72,23 +112,26 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
       </section>
 
       <section className="setup-section">
-        <h2 className="section-title">⚡ Engine Class</h2>
+        <h2 className="section-title">⚡ Race Rules</h2>
         <div className="toggle-group">
-          <Toggle label="Randomize Engine Class" sublabel="50cc · 100cc · 150cc · Mirror · 200cc" checked={settings.mode} onChange={() => set('mode', !settings.mode)} accent="#ff6b00" />
+          <Toggle label="Engine Class" sublabel="50cc · 100cc · 150cc · Mirror · 200cc"
+            checked={settings.mode} onChange={() => set('mode', !settings.mode)} accent="#ff6b00" />
+          <Toggle label="Item Set" sublabel="Normal · Frantic · Shells/Bananas/Mushrooms/Bob-ombs only · None"
+            checked={settings.items} onChange={() => set('items', !settings.items)} accent="#ff6b00" />
+          <Toggle label="Challenge" sublabel="Adds a house rule like No Drifting or Hoarder"
+            checked={settings.challenge} onChange={() => set('challenge', !settings.challenge)} accent="#ff6b00" />
         </div>
       </section>
 
-      {/* FEATURE #2: Prix / Cup randomizer */}
       <section className="setup-section">
-        <h2 className="section-title">🏆 Cup (Prix)</h2>
+        <h2 className="section-title">🏆 Cup</h2>
         <div className="toggle-group">
-          <Toggle
-            label="Randomize Cup"
-            sublabel="Picks 1 of all 24 cups · tracked separately"
-            checked={settings.prix}
-            onChange={() => set('prix', !settings.prix)}
-            accent="#ffd700"
-          />
+          <Toggle label="Randomize Cup" sublabel="Picks 1 of all 24 cups · tracked separately"
+            checked={settings.prix} onChange={() => set('prix', !settings.prix)} accent="#ffd700" />
+          {settings.prix && (
+            <Toggle label="🚫 No Repeats (cups)" sublabel="Always picks from the least-rolled cups"
+              checked={settings.prixNoRepeats} onChange={() => set('prixNoRepeats', !settings.prixNoRepeats)} accent="#ff6b00" />
+          )}
         </div>
       </section>
 
@@ -97,45 +140,37 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, s
         <div className="toggle-group">
           <Toggle label="Randomize Map" checked={settings.map} onChange={() => set('map', !settings.map)} accent="#ffd700" />
         </div>
-
         {settings.map && (
           <>
             <div className="toggle-group" style={{ marginTop: 8 }}>
-              <Toggle label="Standard Maps" sublabel="45 tracks" checked={settings.standardMaps} onChange={() => set('standardMaps', !settings.standardMaps)} />
+              <Toggle label="Standard Maps" sublabel="Base game tracks" checked={settings.standardMaps} onChange={() => set('standardMaps', !settings.standardMaps)} />
               <Toggle label="DLC Maps" sublabel="Booster Course Pass" checked={settings.dlcMaps} onChange={() => set('dlcMaps', !settings.dlcMaps)} />
               <Toggle label="Rainbow Roads" sublabel="5 tracks" checked={settings.rainbowRoads} onChange={() => set('rainbowRoads', !settings.rainbowRoads)} />
               <Toggle label="Tour Maps" sublabel="City tracks" checked={settings.tours} onChange={() => set('tours', !settings.tours)} />
             </div>
-
             <div className="map-count-pill">
-              {noMapCategorySelected
-                ? '⚠️ No map category selected'
-                : `${availableMapCount} tracks in pool`}
+              {noMapCategory ? '⚠️ No map category selected' : `${mapCount} tracks in pool`}
             </div>
-
             <div className="toggle-group" style={{ marginTop: 8 }}>
-              <Toggle
-                label="🚫 No Repeats"
-                sublabel="Always picks from the least-played maps first — auto-balances, never needs resetting"
-                checked={settings.noRepeats}
-                onChange={() => set('noRepeats', !settings.noRepeats)}
-                accent="#ff6b00"
-              />
+              <Toggle label="🚫 No Repeats" sublabel="Always picks from the least-rolled maps — auto-balances"
+                checked={settings.noRepeats} onChange={() => set('noRepeats', !settings.noRepeats)} accent="#ff6b00" />
             </div>
           </>
         )}
       </section>
 
-      <div className="randomize-btn-wrap">
-        <button
-          className={`randomize-btn ${spinning ? 'spinning' : ''}`}
-          onClick={onRandomize}
-          disabled={spinning}
-        >
-          {spinning ? '🎲 Rolling...' : '🎲 RANDOMIZE!'}
+      <section className="setup-section">
+        <h2 className="section-title">🚫 Banned</h2>
+        <button className="manage-btn" onClick={() => setManaging(true)}>
+          <span>{bannedTotal === 0 ? 'Nothing banned' : `${bannedTotal} item${bannedTotal === 1 ? '' : 's'} banned`}</span>
+          <span className="manage-go">Manage ›</span>
         </button>
-      </div>
+        <p className="section-hint">Banned characters, parts, maps and cups are never rolled. You can also hold any card on the Results screen to ban it.</p>
+      </section>
 
+      <div className="randomize-btn-wrap">
+        <button className="randomize-btn" onClick={onRandomize}>🎲 RANDOMIZE!</button>
+      </div>
     </div>
   )
 }

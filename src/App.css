@@ -108,7 +108,8 @@
 
 .randomize-nav-btn .nav-icon {
   font-size: 26px;
-  transition: transform 0.3s;
+  /* the icon remounts on every roll, so this plays each time */
+  animation: spinWheel 0.6s ease-out;
 }
 
 .randomize-nav-btn.spinning .nav-icon {

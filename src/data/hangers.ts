@@ -15,4 +15,5 @@ export const HANGERS: GameItem[] = [
   { id: "SuperGliderMK8", name: "Super Glider", image: "images/gliders/SuperGliderMK8.png" },
   { id: "WaddleWingMK8", name: "Waddle Wing", image: "images/gliders/WaddleWingMK8.png" },
   { id: "WarioWingMK8", name: "Wario Wing", image: "images/gliders/WarioWingMK8.png" },
+  { id: "ParagliderMK8", name: "Paraglider", image: "images/gliders/ParagliderMK8.png" },
 ]

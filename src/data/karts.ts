@@ -2,7 +2,7 @@ import { GameItem } from '../types'
 
 export const KARTS: GameItem[] = [
   { id: "300SLRoadster_MK8", name: "300SL Roadster", image: "images/karts/300SLRoadster_MK8.png" },
-  { id: "BadwagonBodyMK8", name: "Badwagon", image: "images/karts/BiddybuggyBodyMK8.png" },
+  { id: "BadwagonBodyMK8", name: "Badwagon", image: "images/karts/BadwagonBodyMK8.png" },
   { id: "BiddybuggyBodyMK8", name: "Biddy Buggy", image: "images/karts/BiddybuggyBodyMK8.png" },
   { id: "CatCruiserBodyMK8", name: "Cat Cruiser", image: "images/karts/CatCruiserBodyMK8.png" },
   { id: "CircuitSpecialBodyMK8", name: "Circuit Special", image: "images/karts/CircuitSpecialBodyMK8.png" },
@@ -38,4 +38,8 @@ export const KARTS: GameItem[] = [
   { id: "WildWigglerBodyMK8", name: "Wild Wiggler", image: "images/karts/WildWigglerBodyMK8.png" },
   { id: "YoshiBikeBodyMK8", name: "Yoshi Bike", image: "images/karts/YoshiBikeBodyMK8.png" },
   { id: "ZeldaMK8Bdasher", name: "Zelda Dasher", image: "images/karts/ZeldaMK8Bdasher.png" },
+  { id: "KoopaClownBodyMK8", name: "Koopa Clown", image: "images/karts/KoopaClownBodyMK8.png" },
+  { id: "MasterCycleZeroBodyMK8", name: "Master Cycle Zero", image: "images/karts/MasterCycleZeroBodyMK8.png" },
+  { id: "SplatBuggyBodyMK8", name: "Splat Buggy", image: "images/karts/SplatBuggyBodyMK8.png" },
+  { id: "InkstrikerBodyMK8", name: "Inkstriker", image: "images/karts/InkstrikerBodyMK8.png" },
 ]
