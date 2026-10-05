@@ -1,0 +1,103 @@
+.picker { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+
+.picker-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-input);
+  border-radius: var(--radius-xs);
+  border-left: 3px solid var(--player-color, var(--mk-red));
+  padding: 4px 4px 4px 12px;
+  min-height: 48px;
+}
+
+.picker-tag {
+  font-family: 'Bangers', cursive;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  color: var(--player-color, var(--mk-yellow));
+  width: 26px;
+  flex-shrink: 0;
+}
+
+.picker-select {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 10px;
+}
+
+.picker-new, .picker-row { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+
+.picker-input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--mk-yellow);
+  border-radius: var(--radius-xs);
+  background: var(--bg-card);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 10px;
+  user-select: text;
+  outline: none;
+}
+
+.picker-mini {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-xs);
+  border: none;
+  background: var(--mk-yellow);
+  color: #1a1a2e;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.picker-mini:disabled { opacity: 0.4; }
+.picker-mini.ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+
+.picker-manage-toggle {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  color: var(--mk-yellow);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 0 0;
+  cursor: pointer;
+}
+
+.picker-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-input);
+  border-radius: var(--radius-xs);
+  padding: 8px 10px;
+}
+.picker-row { min-height: 40px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.picker-row:last-of-type { border-bottom: none; }
+.picker-name { flex: 1; font-weight: 800; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker-link {
+  border: none;
+  background: none;
+  color: var(--mk-yellow);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+.picker-link.danger { color: var(--text-muted); }
+.picker-link.danger.confirming { color: var(--mk-red); }
+.picker-empty { font-size: 11px; color: var(--text-muted); line-height: 1.4; padding: 4px 0; }

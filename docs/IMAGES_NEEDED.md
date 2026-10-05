@@ -65,7 +65,7 @@ Icon for the item rule. The other five item sets already use item icons in the r
 | ☐ | Frantic Items | `public/images/items/FranticItems.png` |
 | ☐ | No Items | `public/images/items/NoItems.png` |
 
-## Challenges (14)
+## Challenges (9)
 
 Any square picture that fits the rule. These are house rules rather than game assets, so pick whatever you like.
 
@@ -77,13 +77,8 @@ Any square picture that fits the rule. These are house rules rather than game as
 | ☐ | Butterfingers | `public/images/challenges/drop-bananas.png` |
 | ☐ | No Tricks | `public/images/challenges/no-tricks.png` |
 | ☐ | Broke | `public/images/challenges/no-coins.png` |
-| ☐ | Slow Start | `public/images/challenges/late-start.png` |
-| ☐ | One Hand | `public/images/challenges/one-hand.png` |
-| ☐ | Motion Controls | `public/images/challenges/motion.png` |
-| ☐ | Training Wheels | `public/images/challenges/smart-steer.png` |
 | ☐ | Loser's Choice | `public/images/challenges/last-picks.png` |
 | ☐ | Clone Wars | `public/images/challenges/same-racer.png` |
-| ☐ | Rear View | `public/images/challenges/backwards-cam.png` |
 | ☐ | No Boosting | `public/images/challenges/no-mushroom.png` |
 
 ## Already done

@@ -36,11 +36,26 @@ export const DEFAULT_SETTINGS: RandomizeSettings = {
   uniqueLoadouts: false,
   playerCount: 1,
   playerNames: ['', '', '', ''],
+  roster: [],
   rollScope: 'all',
   excluded: { characters: [], karts: [], tires: [], gliders: [], maps: [], prixes: [] },
 }
 
 type Tab = 'setup' | 'results' | 'stats'
+
+const isDefaultName = (n: string) => /^P\d$/.test(n.trim())
+
+// Make sure every name already in use (setup slots or race history) is in the saved list
+function seedRoster(s: RandomizeSettings, history: RaceEntry[]): RandomizeSettings {
+  const roster = [...s.roster]
+  const add = (n: string) => {
+    const name = (n || '').trim()
+    if (name && !isDefaultName(name) && !roster.some(r => r.toLowerCase() === name.toLowerCase())) roster.push(name)
+  }
+  s.playerNames.forEach(add)
+  history.forEach(e => e.names.forEach(add))
+  return roster.length === s.roster.length ? s : { ...s, roster }
+}
 
 // Which cards should play the slot-machine animation for the latest action
 export interface Reveal {
@@ -69,7 +84,7 @@ export default function App() {
       loadStats(), loadSettings(DEFAULT_SETTINGS), loadHistory(), loadCurrentId(),
     ])
     setStats(st)
-    setSettings(se)
+    setSettings(seedRoster(se, hi))
     setHistory(hi)
     setCurrentId(cid && hi.some(h => h.id === cid) ? cid : null)
     setLoaded(true)
@@ -195,6 +210,40 @@ export default function App() {
     showToast({ text: `+1 to all 4 ${prix.name} tracks` })
   }
 
+  // ── Saved players ──
+  // Save a new player and put them in a slot in one update
+  const addPlayer = (name: string, slot: number) => setSettings(s => {
+    const existing = s.roster.find(r => r.toLowerCase() === name.toLowerCase())
+    const playerNames = s.playerNames.map((n, i) => (i === slot ? existing ?? name : n))
+    return { ...s, playerNames, roster: existing ? s.roster : [...s.roster, name] }
+  })
+
+  // Renaming updates the dropdowns, the current slots and every past race,
+  // so all of that player's stats stay together. Renaming onto an existing
+  // name merges the two players.
+  const renamePlayer = (from: string, to: string) => {
+    const typed = to.trim()
+    if (!typed || typed === from) return
+    const existing = settings.roster.find(r => r !== from && r.toLowerCase() === typed.toLowerCase())
+    const name = existing ?? typed
+    const merged = !!existing
+    setSettings(s => ({
+      ...s,
+      roster: Array.from(new Set(s.roster.map(r => (r === from ? name : r)))),
+      playerNames: s.playerNames.map(n => (n === from ? name : n)),
+    }))
+    setHistory(h => h.map(e => (e.names.includes(from)
+      ? { ...e, names: e.names.map(n => (n === from ? name : n)) } : e)))
+    showToast({ text: merged ? `Merged ${from} into ${name}` : `Renamed ${from} to ${name}` })
+  }
+
+  // Removing only takes them out of the dropdowns; their race history stays.
+  const removePlayer = (name: string) => setSettings(s => ({
+    ...s,
+    roster: s.roster.filter(r => r !== name),
+    playerNames: s.playerNames.map(n => (n === name ? '' : n)),
+  }))
+
   const eligibleCount = eligibleMaps(settings, stats).length
 
   return (
@@ -216,6 +265,9 @@ export default function App() {
             onSettingsChange={setSettings}
             onRandomize={() => roll('all')}
             onToggleBan={(p, id) => toggleBan(p, id)}
+            onAddPlayer={addPlayer}
+            onRenamePlayer={renamePlayer}
+            onRemovePlayer={removePlayer}
           />
         )}
         {tab === 'results' && (

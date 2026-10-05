@@ -81,6 +81,7 @@ export function mergeSettings(defaults: RandomizeSettings, saved: Partial<Random
     ...defaults,
     ...saved,
     playerNames: names,
+    roster: Array.isArray(saved.roster) ? saved.roster.filter(n => typeof n === 'string' && n.trim()) : [],
     excluded: { ...defaults.excluded, ...(saved.excluded || {}) },
   }
 }

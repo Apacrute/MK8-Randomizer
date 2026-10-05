@@ -35,13 +35,8 @@ const RAW_CHALLENGES: Omit<Challenge, 'image'>[] = [
   { id: "drop-bananas",  emblem: "🍌", name: "Butterfingers",        detail: "Bananas must be dropped the moment you get them." },
   { id: "no-tricks",     emblem: "🛹", name: "No Tricks",            detail: "No jump tricks off ramps or ledges." },
   { id: "no-coins",      emblem: "🪙", name: "Broke",                detail: "Avoid coins — every coin you grab is a penalty point." },
-  { id: "late-start",    emblem: "⏳", name: "Slow Start",           detail: "Wait one full second after GO before accelerating." },
-  { id: "one-hand",      emblem: "✋", name: "One Hand",             detail: "Play the whole race with one hand on the controller." },
-  { id: "motion",        emblem: "🎮", name: "Motion Controls",      detail: "Everyone steers with motion controls." },
-  { id: "smart-steer",   emblem: "🤖", name: "Training Wheels",      detail: "Everyone turns Smart Steering on." },
   { id: "last-picks",    emblem: "🗳️", name: "Loser's Choice",       detail: "Last place picks the next track instead of rolling." },
   { id: "same-racer",    emblem: "👯", name: "Clone Wars",           detail: "Next race, everyone uses the winner's character." },
-  { id: "backwards-cam", emblem: "👀", name: "Rear View",            detail: "Look behind you (rear-view) on every straightaway." },
   { id: "no-mushroom",   emblem: "🍄", name: "No Boosting",          detail: "Mushrooms can't be used — hold or drop them." },
 ]
 

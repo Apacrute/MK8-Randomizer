@@ -1,23 +1,47 @@
 // src/components/PlayerStats.tsx
+import { useState } from 'react'
 import { RaceEntry } from '../types'
 import { buildPlayerStats } from '../lib/playerStats'
 import { BY_ID } from '../lib/catalog'
 import { ordinal } from './RecordRace'
 
+type Range = 'today' | 'month' | 'all'
+
+function since(range: Range): number {
+  const d = new Date()
+  if (range === 'today') { d.setHours(0, 0, 0, 0); return d.getTime() }
+  if (range === 'month') return Date.now() - 30 * 24 * 60 * 60 * 1000
+  return 0
+}
+
 export default function PlayerStats({ history }: { history: RaceEntry[] }) {
-  const players = buildPlayerStats(history)
+  const [range, setRange] = useState<Range>('all')
+  const start = since(range)
+  const players = buildPlayerStats(history.filter(e => e.ts >= start))
+
+  const rangeSwitch = (
+    <div className="filter-row">
+      {([['today', 'Today'], ['month', 'Last 30 days'], ['all', 'All time']] as const).map(([r, label]) => (
+        <button key={r} className={`filter-btn ${range === r ? 'active' : ''}`} onClick={() => setRange(r)}>{label}</button>
+      ))}
+    </div>
+  )
 
   if (players.length === 0) {
     return (
+      <div className="player-stats">
+      {rangeSwitch}
       <div className="stats-empty">
         <p>No recorded races yet.</p>
         <p className="stats-empty-sub">After a race, tap <b>Record placements</b> on the Results screen.</p>
+      </div>
       </div>
     )
   }
 
   return (
     <div className="player-stats">
+      {rangeSwitch}
       {players.map((p, rank) => (
         <section className="pstat-card" key={p.name}>
           <div className="pstat-head">

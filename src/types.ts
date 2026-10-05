@@ -79,7 +79,8 @@ export interface RandomizeSettings {
   noRepeats: boolean
   uniqueLoadouts: boolean
   playerCount: number
-  playerNames: string[]
+  playerNames: string[]       // who is in each player slot right now
+  roster: string[]            // everyone you've saved, offered in the dropdowns
   rollScope: RollScope
   excluded: Excluded
 }

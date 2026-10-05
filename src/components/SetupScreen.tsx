@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { RandomizeSettings, PoolKey } from '../types'
 import { mapPool } from '../lib/roll'
 import PoolManager from './PoolManager'
+import PlayerPicker from './PlayerPicker'
 import './SetupScreen.css'
 
 interface Props {
@@ -10,6 +11,9 @@ interface Props {
   onSettingsChange: (s: RandomizeSettings) => void
   onRandomize: () => void
   onToggleBan: (pool: PoolKey, id: string) => void
+  onAddPlayer: (name: string, slot: number) => void
+  onRenamePlayer: (from: string, to: string) => void
+  onRemovePlayer: (name: string) => void
 }
 
 function Toggle({ label, sublabel, checked, onChange, accent }: {
@@ -34,9 +38,9 @@ function Toggle({ label, sublabel, checked, onChange, accent }: {
   )
 }
 
-const PLAYER_COLORS = ['#e8001c', '#0057b8', '#00a651', '#ff6b00']
-
-export default function SetupScreen({ settings, onSettingsChange, onRandomize, onToggleBan }: Props) {
+export default function SetupScreen({
+  settings, onSettingsChange, onRandomize, onToggleBan, onAddPlayer, onRenamePlayer, onRemovePlayer,
+}: Props) {
   const [managing, setManaging] = useState(false)
   const set = <K extends keyof RandomizeSettings>(key: K, val: RandomizeSettings[K]) =>
     onSettingsChange({ ...settings, [key]: val })
@@ -76,20 +80,15 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, o
             </button>
           ))}
         </div>
-        <div className="name-list">
-          {Array.from({ length: settings.playerCount }, (_, i) => (
-            <label className="name-row" key={i} style={{ '--player-color': PLAYER_COLORS[i] } as React.CSSProperties}>
-              <span className="name-tag">P{i + 1}</span>
-              <input
-                className="name-input"
-                value={settings.playerNames[i] || ''}
-                placeholder={`Player ${i + 1} name`}
-                maxLength={20}
-                onChange={e => setName(i, e.target.value)}
-              />
-            </label>
-          ))}
-        </div>
+        <PlayerPicker
+          count={settings.playerCount}
+          slots={settings.playerNames}
+          roster={settings.roster}
+          onPick={setName}
+          onAdd={onAddPlayer}
+          onRename={onRenamePlayer}
+          onRemove={onRemovePlayer}
+        />
         {settings.playerCount > 1 && (
           <div className="toggle-group" style={{ marginTop: 10 }}>
             <Toggle label="👯 Different for everyone"
@@ -98,7 +97,7 @@ export default function SetupScreen({ settings, onSettingsChange, onRandomize, o
               onChange={() => set('uniqueLoadouts', !settings.uniqueLoadouts)} accent="#00a651" />
           </div>
         )}
-        <p className="section-hint">Names are used for placements and stats. Map, cup and rules are shared.</p>
+        <p className="section-hint">Players are saved, so their stats carry over between game nights. Map, cup and rules are shared.</p>
       </section>
 
       <section className="setup-section">
