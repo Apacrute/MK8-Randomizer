@@ -4,6 +4,7 @@ import { RaceEntry } from '../types'
 import { buildPlayerStats } from '../lib/playerStats'
 import { BY_ID } from '../lib/catalog'
 import { ordinal } from './RecordRace'
+import Matchups from './Matchups'
 
 type Range = 'today' | 'month' | 'all'
 
@@ -16,16 +17,28 @@ function since(range: Range): number {
 
 export default function PlayerStats({ history }: { history: RaceEntry[] }) {
   const [range, setRange] = useState<Range>('all')
+  const [mode, setMode] = useState<'players' | 'matchups'>('players')
   const start = since(range)
-  const players = buildPlayerStats(history.filter(e => e.ts >= start))
+  const inRange = history.filter(e => e.ts >= start)
+  const players = buildPlayerStats(inRange)
 
   const rangeSwitch = (
+    <>
+    <div className="sub-switch">
+      <button className={`sub-btn ${mode === 'players' ? 'active' : ''}`} onClick={() => setMode('players')}>Each player</button>
+      <button className={`sub-btn ${mode === 'matchups' ? 'active' : ''}`} onClick={() => setMode('matchups')}>Matchups</button>
+    </div>
     <div className="filter-row">
       {([['today', 'Today'], ['month', 'Last 30 days'], ['all', 'All time']] as const).map(([r, label]) => (
         <button key={r} className={`filter-btn ${range === r ? 'active' : ''}`} onClick={() => setRange(r)}>{label}</button>
       ))}
     </div>
+    </>
   )
+
+  if (mode === 'matchups') {
+    return <div className="player-stats">{rangeSwitch}<Matchups history={inRange} /></div>
+  }
 
   if (players.length === 0) {
     return (
@@ -50,7 +63,7 @@ export default function PlayerStats({ history }: { history: RaceEntry[] }) {
             <span className="pstat-races">{p.races} race{p.races === 1 ? '' : 's'}</span>
           </div>
           <div className="pstat-grid">
-            <div className="pstat"><b>{p.groupWins}</b><span>Group wins</span></div>
+            <div className="pstat"><b>{p.groupWins}</b><span>Race wins</span></div>
             <div className="pstat"><b>{p.firsts}</b><span>1st place</span></div>
             <div className="pstat"><b>{p.podiums}</b><span>Podiums</span></div>
             <div className="pstat"><b>{p.avgPlace ? ordinal(Math.round(p.avgPlace)) : '–'}</b><span>Avg place</span></div>
@@ -69,7 +82,7 @@ export default function PlayerStats({ history }: { history: RaceEntry[] }) {
           )}
         </section>
       ))}
-      <p className="edit-hint">Group wins = beat everyone else in the group. Ties share the win.</p>
+      <p className="edit-hint">Race win = best placement among the players in that race, even if it wasn't 1st. Ties count for each. Solo races don't count.</p>
     </div>
   )
 }

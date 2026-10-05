@@ -92,3 +92,56 @@ export function mapChampions(history: RaceEntry[]): Record<string, { name: strin
   }
   return out
 }
+
+// ── Matchups: how each exact group of players does against each other ──
+export interface MatchupMember {
+  name: string
+  wins: number            // best placement among this group in a race
+  avgPlace: number | null
+  great: number
+  rough: number
+}
+
+export interface Matchup {
+  key: string             // sorted names, e.g. "Connor|Drew"
+  names: string[]
+  races: number
+  members: MatchupMember[]   // sorted by wins
+}
+
+export function buildMatchups(history: RaceEntry[]): Matchup[] {
+  const groups: Record<string, { names: string[]; races: number; m: Record<string, { wins: number; sum: number; n: number; great: number; rough: number }> }> = {}
+
+  for (const e of history) {
+    if (!e.results || e.names.length < 2) continue
+    if (!e.results.some(r => r && r.place !== null)) continue
+    const names = Array.from(new Set(e.names)).sort((a, b) => a.localeCompare(b))
+    if (names.length < 2) continue
+    const key = names.join('|')
+    const g = groups[key] ??= { names, races: 0, m: {} }
+    g.races++
+    const winners = groupWinners(e)
+    e.names.forEach((name, i) => {
+      const r = e.results![i]
+      const s = g.m[name] ??= { wins: 0, sum: 0, n: 0, great: 0, rough: 0 }
+      if (winners.includes(i)) s.wins++
+      if (r?.place != null) { s.sum += r.place; s.n++ }
+      if (r?.rating === 'great') s.great++
+      if (r?.rating === 'rough') s.rough++
+    })
+  }
+
+  return Object.entries(groups)
+    .map(([key, g]) => ({
+      key,
+      names: g.names,
+      races: g.races,
+      members: g.names
+        .map(name => {
+          const s = g.m[name] ?? { wins: 0, sum: 0, n: 0, great: 0, rough: 0 }
+          return { name, wins: s.wins, avgPlace: s.n ? s.sum / s.n : null, great: s.great, rough: s.rough }
+        })
+        .sort((a, b) => b.wins - a.wins || (a.avgPlace ?? 99) - (b.avgPlace ?? 99)),
+    }))
+    .sort((a, b) => b.races - a.races || a.names.length - b.names.length)
+}

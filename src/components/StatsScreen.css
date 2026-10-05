@@ -399,3 +399,42 @@
 }
 .backup-btn.ghost { background: transparent; border: 1px solid rgba(0,166,81,0.5); color: var(--mk-green); }
 .backup-btn:disabled { opacity: 0.5; }
+
+/* ── Each player / Matchups switch ── */
+.sub-switch { display: flex; gap: 4px; background: var(--bg-input); padding: 3px; border-radius: 20px; border: 1px solid var(--border); }
+.sub-btn {
+  flex: 1; padding: 7px; border: none; border-radius: 20px; background: transparent;
+  color: var(--text-muted); font-weight: 800; font-size: 13px; cursor: pointer;
+}
+.sub-btn.active { background: rgba(255,215,0,0.15); color: var(--mk-yellow); }
+
+/* ── Matchups ── */
+.matchups { display: flex; flex-direction: column; gap: 10px; }
+.matchup-filter {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 800; color: var(--text-muted);
+}
+.matchup-filter select {
+  flex: 1; height: 38px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text); font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 700; padding: 0 10px;
+}
+.matchup-card {
+  background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.matchup-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.matchup-title { font-family: 'Bangers', cursive; font-size: 21px; letter-spacing: 0.5px; color: var(--mk-yellow); }
+.matchup-races { font-size: 12px; font-weight: 700; color: var(--text-muted); flex-shrink: 0; }
+.matchup-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 58px;
+  grid-template-areas: "name bar wins" "name extra extra";
+  align-items: center;
+  column-gap: 10px;
+}
+.matchup-name { grid-area: name; font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.matchup-bar { grid-area: bar; height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+.matchup-fill { height: 100%; background: var(--mk-yellow); border-radius: 4px; }
+.matchup-wins { grid-area: wins; font-size: 13px; font-weight: 800; text-align: right; }
+.matchup-extra { grid-area: extra; font-size: 11px; color: var(--text-muted); }

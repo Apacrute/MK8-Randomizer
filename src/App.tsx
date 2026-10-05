@@ -15,6 +15,7 @@ import SetupScreen from './components/SetupScreen'
 import ResultsScreen from './components/ResultsScreen'
 import StatsScreen from './components/StatsScreen'
 import Toast, { ToastState } from './components/Toast'
+import ResultPrompt from './components/ResultPrompt'
 import './App.css'
 
 export const DEFAULT_SETTINGS: RandomizeSettings = {
@@ -42,6 +43,9 @@ export const DEFAULT_SETTINGS: RandomizeSettings = {
 }
 
 type Tab = 'setup' | 'results' | 'stats'
+
+const PROMPT_DELAY = 2 * 60 * 1000     // ask for results 2 minutes after a race is rolled
+const PROMPT_WINDOW = 45 * 60 * 1000   // ...but not for races older than this
 
 const isDefaultName = (n: string) => /^P\d$/.test(n.trim())
 
@@ -74,6 +78,19 @@ export default function App() {
   const [reveal, setReveal] = useState<Reveal>({ nonce: 0, targets: [], at: 0 })
   const [toast, setToast] = useState<ToastState | null>(null)
   const contentRef = useRef<HTMLElement>(null)
+
+  // ── "How did the race go?" prompt ──
+  const [now, setNow] = useState(Date.now())
+  const [snoozedUntil, setSnoozedUntil] = useState<Record<string, number>>({})
+  const [skipped, setSkipped] = useState<Record<string, true>>({})
+  useEffect(() => {
+    // Compare against the clock instead of a single timer, so it still shows
+    // after the phone screen was off or the app was in the background.
+    const tick = () => setNow(Date.now())
+    const id = setInterval(tick, 5000)
+    document.addEventListener('visibilitychange', tick)
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', tick) }
+  }, [])
 
   // New tab or new roll → start at the top so the cup/map are visible
   useEffect(() => { contentRef.current?.scrollTo({ top: 0 }) }, [tab])
@@ -246,6 +263,11 @@ export default function App() {
 
   const eligibleCount = eligibleMaps(settings, stats).length
 
+  const promptEntry = current && !current.results && !skipped[current.id] &&
+    now >= (snoozedUntil[current.id] ?? current.ts + PROMPT_DELAY) &&
+    now - current.ts < PROMPT_WINDOW
+    ? current : null
+
   return (
     <div className="app">
       <header className="app-header">
@@ -328,6 +350,15 @@ export default function App() {
           <span className="nav-label">Stats</span>
         </button>
       </nav>
+
+      {promptEntry && (
+        <ResultPrompt
+          entry={promptEntry}
+          onSave={r => { recordResults(promptEntry.id, r); showToast({ text: 'Result saved' }) }}
+          onLater={() => setSnoozedUntil(x => ({ ...x, [promptEntry.id]: Date.now() + PROMPT_DELAY }))}
+          onSkip={() => setSkipped(x => ({ ...x, [promptEntry.id]: true }))}
+        />
+      )}
 
       <Toast toast={toast} onClose={() => setToast(null)} />
     </div>
